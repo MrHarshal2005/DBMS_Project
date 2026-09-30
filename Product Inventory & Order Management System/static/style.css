@@ -1,0 +1,168 @@
+:root {
+  --brand: #4f46e5;
+  --brand-dark: #3730a3;
+  --brand-light: #eef2ff;
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --bg: #f6f7fb;
+  --sidebar-width: 230px;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: "Segoe UI", Roboto, -apple-system, sans-serif;
+  color: #1f2430;
+}
+
+.app-navbar {
+  background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+}
+
+.app-footer {
+  color: #8b8f9c;
+  border-top: 1px solid #e6e7ee;
+  background: #fff;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  font-size: 0.6rem;
+}
+
+/* ----------------------------------------------------- seller sidebar */
+.seller-sidebar {
+  position: fixed;
+  top: 56px;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: #ffffff;
+  border-right: 1px solid #e6e7ee;
+  padding-top: 1rem;
+  z-index: 900;
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  color: #4b5065;
+  text-decoration: none;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+
+.side-link:hover {
+  background: var(--brand-light);
+  color: var(--brand-dark);
+}
+
+.side-link.active {
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  border-left-color: var(--brand);
+}
+
+.main-with-sidebar {
+  margin-left: 0;
+}
+
+@media (min-width: 992px) {
+  .main-with-sidebar {
+    margin-left: var(--sidebar-width);
+  }
+}
+
+/* ------------------------------------------------------------- cards */
+.stat-card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(31, 36, 48, 0.06);
+  padding: 1.2rem 1.4rem;
+  background: #fff;
+  height: 100%;
+}
+
+.stat-card .stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #fff;
+  background: var(--brand);
+}
+
+.stat-card .stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.stat-card .stat-label {
+  color: #8b8f9c;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(31, 36, 48, 0.06);
+}
+
+/* ---------------------------------------------------------- products */
+.product-card img {
+  height: 180px;
+  object-fit: cover;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  background: #f0f1f6;
+}
+
+.product-card .price {
+  font-weight: 700;
+  color: var(--brand-dark);
+  font-size: 1.15rem;
+}
+
+.badge-low-stock {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-out-of-stock {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pill {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-Pending { background: #fef3c7; color: #92400e; }
+.status-Confirmed { background: #dbeafe; color: #1e40af; }
+.status-Packed { background: #ede9fe; color: #5b21b6; }
+.status-Shipped { background: #cffafe; color: #155e75; }
+.status-Delivered { background: #dcfce7; color: #166534; }
+.status-Cancelled { background: #fee2e2; color: #991b1b; }
+
+.auth-wrapper {
+  max-width: 440px;
+  margin: 2.5rem auto;
+}
+
+.brand-hero {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  border-radius: 16px;
+}
