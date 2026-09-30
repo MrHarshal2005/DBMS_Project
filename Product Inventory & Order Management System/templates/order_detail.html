@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }} - InventoryHub{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Order {{ order.order_number }}</h4>
+  <span class="status-pill status-{{ order.order_status }} fs-6">{{ order.order_status }}</span>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card p-4">
+      <h6 class="mb-3">Items</h6>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+          <tbody>
+          {% for item in order.items %}
+            <tr>
+              <td>{{ item.product_name }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.unit_price|currency }}</td>
+              <td>{{ item.subtotal|currency }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr><th colspan="3" class="text-end">Grand Total</th><th>{{ order.total_amount|currency }}</th></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <h6 class="mt-4 mb-2">Update Status</h6>
+      {% if next_status %}
+      <form method="POST" action="{{ url_for('seller.update_order_status', order_id=order.id) }}" class="d-flex gap-2">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="new_status" value="{{ next_status }}">
+        <button type="submit" class="btn btn-primary">
+          Mark as {{ next_status }}
+        </button>
+      </form>
+      {% else %}
+      <p class="text-muted mb-0">This order has reached its final status and cannot be advanced further.</p>
+      {% endif %}
+
+      {% if order.can_cancel() %}
+      <form method="POST" action="{{ url_for('seller.update_order_status', order_id=order.id) }}" class="mt-2"
+            data-confirm="Cancel this order and restock its items?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="new_status" value="Cancelled">
+        <button type="submit" class="btn btn-outline-danger">Cancel Order</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card p-4 mb-3">
+      <h6 class="mb-3">Buyer &amp; Delivery Info</h6>
+      <p class="mb-1"><strong>{{ order.buyer.name }}</strong> ({{ order.buyer.email }})</p>
+      <p class="mb-1">{{ order.delivery_address }}</p>
+      <p class="mb-1">{{ order.delivery_city }}, {{ order.delivery_state }} - {{ order.delivery_pincode }}</p>
+      <p class="mb-1">Phone: {{ order.delivery_phone }}</p>
+      <p class="mb-0">Order Date: {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+    </div>
+    <div class="card p-4">
+      <h6 class="mb-3">Payment</h6>
+      <p class="mb-1">Method: {{ order.payment_method }}</p>
+      <p class="mb-0">Status: {{ order.payment_status }}</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

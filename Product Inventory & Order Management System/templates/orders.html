@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Orders - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">Order Management</h4>
+
+<form method="GET" class="mb-3">
+  <select name="status" class="form-select" style="max-width:220px" onchange="this.form.submit()">
+    <option value="">All Statuses</option>
+    {% for s in statuses %}
+    <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<div class="card p-3">
+  {% if not orders %}
+  <div class="text-center py-5">
+    <i class="fa-solid fa-receipt fa-3x text-muted mb-3"></i>
+    <h5>No orders found</h5>
+  </div>
+  {% else %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Order</th><th>Buyer</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for o in orders %}
+        <tr>
+          <td>{{ o.order_number }}</td>
+          <td>{{ o.buyer.name }}</td>
+          <td>{{ o.total_amount|currency }}</td>
+          <td>{{ o.created_at.strftime('%d %b %Y') }}</td>
+          <td><span class="status-pill status-{{ o.order_status }}">{{ o.order_status }}</span></td>
+          <td><a href="{{ url_for('seller.seller_order_detail', order_id=o.id) }}" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if pagination.pages > 1 %}
+  <nav class="mt-2">
+    <ul class="pagination justify-content-center">
+      {% for page_num in pagination.iter_pages() %}
+        {% if page_num %}
+        <li class="page-item {{ 'active' if page_num == pagination.page }}">
+          <a class="page-link" href="{{ url_for('seller.seller_orders', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

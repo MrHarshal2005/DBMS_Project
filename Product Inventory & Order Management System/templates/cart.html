@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}My Cart - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">Shopping Cart</h4>
+
+{% if not items %}
+<div class="text-center py-5">
+  <i class="fa-solid fa-cart-shopping fa-3x text-muted mb-3"></i>
+  <h5>Your cart is empty</h5>
+  <a href="{{ url_for('products.catalog') }}" class="btn btn-primary mt-2">Continue Shopping</a>
+</div>
+{% else %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card p-3">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr><th>Product</th><th>Seller</th><th>Price</th><th style="width:140px">Quantity</th><th>Subtotal</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <img src="{{ item.product.image_url }}" width="48" height="48" class="rounded" style="object-fit:cover">
+                  <a href="{{ url_for('products.detail', product_id=item.product.id) }}" class="text-decoration-none text-dark">{{ item.product.name }}</a>
+                </div>
+              </td>
+              <td>{{ item.product.seller.name }}</td>
+              <td>{{ item.product.price|currency }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('cart.update_item', item_id=item.id) }}" class="d-flex align-items-center" data-qty-stepper>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-qty-action="decrease">-</button>
+                  <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock_quantity }}"
+                         class="form-control form-control-sm text-center mx-1" style="width:55px"
+                         onchange="this.form.submit()">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-qty-action="increase">+</button>
+                </form>
+              </td>
+              <td class="fw-semibold">{{ item.subtotal|currency }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('cart.remove_item', item_id=item.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-between mt-2">
+        <a href="{{ url_for('products.catalog') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i>Continue Shopping</a>
+        <form method="POST" action="{{ url_for('cart.clear_cart') }}" data-confirm="Clear your entire cart?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-outline-danger">Clear Cart</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card p-4">
+      <h6 class="mb-3">Order Summary</h6>
+      <div class="d-flex justify-content-between mb-2">
+        <span>Items ({{ cart.item_count }})</span>
+        <span>{{ cart.total|currency }}</span>
+      </div>
+      <div class="d-flex justify-content-between mb-2 text-muted small">
+        <span>Shipping</span>
+        <span>FREE</span>
+      </div>
+      <hr>
+      <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+        <span>Total</span>
+        <span>{{ cart.total|currency }}</span>
+      </div>
+      <a href="{{ url_for('orders.checkout') }}" class="btn btn-primary w-100">Proceed to Checkout</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

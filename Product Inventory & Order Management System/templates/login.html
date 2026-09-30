@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Login - InventoryHub{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="card p-4">
+    <div class="text-center mb-3">
+      <i class="fa-solid fa-cubes-stacked fa-2x text-primary"></i>
+      <h4 class="mt-2 mb-0">Welcome back</h4>
+      <small class="text-muted">Log in to your account</small>
+    </div>
+    <form method="POST" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label class="form-label">Email address</label>
+        <input type="email" name="email" class="form-control" value="{{ email }}" required autofocus>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <div class="mb-3 form-check">
+        <input type="checkbox" name="remember" class="form-check-input" id="remember">
+        <label class="form-check-label" for="remember">Remember me</label>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Log In</button>
+    </form>
+    <hr>
+    <p class="text-center mb-1 small">New buyer? <a href="{{ url_for('auth.register', role='buyer') }}">Create a buyer account</a></p>
+    <p class="text-center mb-0 small">Want to sell? <a href="{{ url_for('auth.register', role='seller') }}">Register as a seller</a></p>
+  </div>
+</div>
+{% endblock %}

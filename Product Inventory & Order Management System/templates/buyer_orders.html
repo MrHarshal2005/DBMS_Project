@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}My Orders - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">My Orders</h4>
+<div class="card p-3">
+  {% if not orders %}
+  <div class="text-center py-5">
+    <i class="fa-solid fa-receipt fa-3x text-muted mb-3"></i>
+    <h5>No orders yet</h5>
+    <a href="{{ url_for('products.catalog') }}" class="btn btn-primary mt-2">Start Shopping</a>
+  </div>
+  {% else %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Order</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for o in orders %}
+        <tr>
+          <td>{{ o.order_number }}</td>
+          <td>{{ o.created_at.strftime('%d %b %Y') }}</td>
+          <td>{{ o.total_amount|currency }}</td>
+          <td><span class="status-pill status-{{ o.order_status }}">{{ o.order_status }}</span></td>
+          <td><a href="{{ url_for('orders.buyer_order_detail', order_id=o.id) }}" class="btn btn-sm btn-outline-primary">View Details</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if pagination.pages > 1 %}
+  <nav class="mt-2">
+    <ul class="pagination justify-content-center">
+      {% for page_num in pagination.iter_pages() %}
+        {% if page_num %}
+        <li class="page-item {{ 'active' if page_num == pagination.page }}">
+          <a class="page-link" href="{{ url_for('orders.buyer_orders', page=page_num) }}">{{ page_num }}</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

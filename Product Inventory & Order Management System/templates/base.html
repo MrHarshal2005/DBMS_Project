@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}InventoryHub{% endblock %}</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+{% block extra_head %}{% endblock %}
+</head>
+<body class="{% if current_user.is_authenticated and current_user.is_seller() %}has-sidebar{% endif %}">
+
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar sticky-top">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+      <i class="fa-solid fa-cubes-stacked me-2"></i>InventoryHub
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('products.catalog') }}">Shop</a></li>
+        {% if current_user.is_authenticated and current_user.is_seller() %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('seller.dashboard') }}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('seller.products') }}">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('seller.seller_orders') }}">Orders</a></li>
+        {% endif %}
+        {% if current_user.is_authenticated and current_user.is_buyer() %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('orders.buyer_orders') }}">My Orders</a></li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav align-items-lg-center">
+        {% if current_user.is_authenticated %}
+          {% if current_user.is_buyer() %}
+          <li class="nav-item">
+            <a class="nav-link position-relative" href="{{ url_for('cart.view_cart') }}">
+              <i class="fa-solid fa-cart-shopping"></i>
+              {% if cart_item_count and cart_item_count > 0 %}
+              <span class="badge rounded-pill bg-danger cart-badge">{{ cart_item_count }}</span>
+              {% endif %}
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fa-solid fa-circle-user me-1"></i>{{ current_user.name.split(' ')[0] }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              {% if current_user.is_buyer() %}
+              <li><a class="dropdown-item" href="{{ url_for('buyer.profile') }}">Profile</a></li>
+              {% endif %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Login</a></li>
+          <li class="nav-item"><a class="btn btn-light btn-sm ms-lg-2" href="{{ url_for('auth.register', role='buyer') }}">Sign Up</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% if current_user.is_authenticated and current_user.is_seller() %}
+<div class="seller-sidebar d-none d-lg-flex flex-column">
+  <a href="{{ url_for('seller.dashboard') }}" class="side-link {{ 'active' if request.endpoint == 'seller.dashboard' }}"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+  <a href="{{ url_for('seller.products') }}" class="side-link {{ 'active' if 'product' in request.endpoint }}"><i class="fa-solid fa-box"></i> Products</a>
+  <a href="{{ url_for('seller.categories') }}" class="side-link {{ 'active' if request.endpoint == 'seller.categories' }}"><i class="fa-solid fa-tags"></i> Categories</a>
+  <a href="{{ url_for('seller.inventory') }}" class="side-link {{ 'active' if request.endpoint == 'seller.inventory' }}"><i class="fa-solid fa-warehouse"></i> Inventory</a>
+  <a href="{{ url_for('seller.seller_orders') }}" class="side-link {{ 'active' if 'order' in request.endpoint }}"><i class="fa-solid fa-receipt"></i> Orders</a>
+  <a href="{{ url_for('seller.reports') }}" class="side-link {{ 'active' if request.endpoint == 'seller.reports' }}"><i class="fa-solid fa-chart-line"></i> Reports</a>
+</div>
+{% endif %}
+
+<main class="{% if current_user.is_authenticated and current_user.is_seller() %}main-with-sidebar{% endif %} py-4">
+  <div class="container-fluid px-3 px-lg-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'danger' else category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="app-footer text-center py-3">
+  <small>&copy; 2026 InventoryHub &mdash; Seller-Buyer Inventory &amp; Order Management System</small>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Checkout - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">Checkout</h4>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card p-4">
+      <h6 class="mb-3">Delivery Details</h6>
+      <form method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Full name</label>
+            <input type="text" name="delivery_name" class="form-control" value="{{ form.get('delivery_name', current_user.name) }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Phone number</label>
+            <input type="text" name="delivery_phone" class="form-control" value="{{ form.get('delivery_phone', current_user.phone or '') }}" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Email</label>
+            <input type="email" name="delivery_email" class="form-control" value="{{ form.get('delivery_email', current_user.email) }}" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Address</label>
+            <textarea name="delivery_address" class="form-control" rows="2" required>{{ form.get('delivery_address','') }}</textarea>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">City</label>
+            <input type="text" name="delivery_city" class="form-control" value="{{ form.get('delivery_city','') }}" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">State</label>
+            <input type="text" name="delivery_state" class="form-control" value="{{ form.get('delivery_state','') }}" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Pincode</label>
+            <input type="text" name="delivery_pincode" class="form-control" value="{{ form.get('delivery_pincode','') }}" required>
+          </div>
+        </div>
+
+        <h6 class="mt-4 mb-2">Payment Method</h6>
+        <div class="form-check border rounded p-3">
+          <input class="form-check-input" type="radio" name="payment_method" id="cod" checked disabled>
+          <label class="form-check-label" for="cod">
+            <strong>Cash on Delivery</strong>
+            <div class="small text-muted">Pay when your order arrives. Online payments coming soon.</div>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-4">Place Order</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card p-4">
+      <h6 class="mb-3">Order Summary</h6>
+      {% for item in items %}
+      <div class="d-flex justify-content-between mb-2">
+        <span>{{ item.product.name }} &times; {{ item.quantity }}</span>
+        <span>{{ item.subtotal|currency }}</span>
+      </div>
+      {% endfor %}
+      <hr>
+      <div class="d-flex justify-content-between fw-bold fs-5">
+        <span>Grand Total</span>
+        <span>{{ grand_total|currency }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

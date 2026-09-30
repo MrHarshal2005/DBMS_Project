@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">Hi {{ current_user.name.split(' ')[0] }}, welcome back!</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="stat-card d-flex align-items-center gap-3">
+      <div class="stat-icon" style="background:#4f46e5"><i class="fa-solid fa-receipt"></i></div>
+      <div>
+        <div class="stat-value">{{ total_orders }}</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card d-flex align-items-center gap-3">
+      <div class="stat-icon" style="background:#d97706"><i class="fa-solid fa-truck"></i></div>
+      <div>
+        <div class="stat-value">{{ pending_orders }}</div>
+        <div class="stat-label">In Progress</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card d-flex align-items-center gap-3">
+      <div class="stat-icon" style="background:#16a34a"><i class="fa-solid fa-box-open"></i></div>
+      <div>
+        <div class="stat-value">{{ delivered_orders }}</div>
+        <div class="stat-label">Delivered</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="mb-0">Recent Orders</h6>
+    <a href="{{ url_for('orders.buyer_orders') }}" class="small">View all</a>
+  </div>
+  {% if recent_orders %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Order</th><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for o in recent_orders %}
+        <tr>
+          <td>{{ o.order_number }}</td>
+          <td>{{ o.created_at.strftime('%d %b %Y') }}</td>
+          <td>{{ o.total_amount|currency }}</td>
+          <td><span class="status-pill status-{{ o.order_status }}">{{ o.order_status }}</span></td>
+          <td><a href="{{ url_for('orders.buyer_order_detail', order_id=o.id) }}" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">You haven't placed any orders yet. <a href="{{ url_for('products.catalog') }}">Start shopping</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

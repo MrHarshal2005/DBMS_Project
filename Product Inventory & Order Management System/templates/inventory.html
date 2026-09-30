@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Inventory - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">Inventory</h4>
+
+<div class="card p-3 mb-4">
+  <h6 class="mb-3">Current Stock</h6>
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Min. Level</th><th>Status</th><th>Adjust</th></tr></thead>
+      <tbody>
+      {% for p in products %}
+        <tr>
+          <td>{{ p.name }}</td>
+          <td><code>{{ p.sku }}</code></td>
+          <td>{{ p.stock_quantity }}</td>
+          <td>{{ p.minimum_stock }}</td>
+          <td>
+            {% if p.stock_quantity == 0 %}
+              <span class="badge badge-out-of-stock">Out of Stock</span>
+            {% elif p.is_low_stock %}
+              <span class="badge badge-low-stock">LOW STOCK</span>
+            {% else %}
+              <span class="badge bg-success">OK</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('seller.adjust_inventory', product_id=p.id) }}" class="d-flex gap-1">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="number" name="quantity_change" class="form-control form-control-sm" placeholder="+/-" style="width:80px" required>
+              <input type="text" name="notes" class="form-control form-control-sm" placeholder="Reason (optional)">
+              <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card p-3">
+  <h6 class="mb-3">Recent Inventory Transactions</h6>
+  {% if recent_transactions %}
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead><tr><th>Date</th><th>Product</th><th>Type</th><th>Change</th><th>New Stock</th><th>Reference</th><th>Notes</th></tr></thead>
+      <tbody>
+      {% for t in recent_transactions %}
+        <tr>
+          <td>{{ t.created_at.strftime('%d %b %Y %H:%M') }}</td>
+          <td>{{ t.product.name }}</td>
+          <td><span class="badge bg-light text-dark border">{{ t.transaction_type }}</span></td>
+          <td class="{{ 'text-success' if t.quantity_change > 0 else 'text-danger' }}">
+            {{ '+' if t.quantity_change > 0 else '' }}{{ t.quantity_change }}
+          </td>
+          <td>{{ t.new_stock }}</td>
+          <td>{{ t.reference_id or '-' }}</td>
+          <td>{{ t.notes or '-' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted mb-0">No inventory transactions yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

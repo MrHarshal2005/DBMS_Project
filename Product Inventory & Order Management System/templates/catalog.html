@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Shop - InventoryHub{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <form method="GET" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{ q }}">
+      </div>
+      <div class="col-md-3">
+        <select name="category" class="form-select">
+          <option value="">All Categories</option>
+          {% for c in categories %}
+          <option value="{{ c.id }}" {% if category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select name="sort" class="form-select">
+          <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+          <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+          <option value="name" {% if sort == 'name' %}selected{% endif %}>Name: A-Z</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-filter"></i></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if not products %}
+<div class="text-center py-5">
+  <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
+  <h5>No products found</h5>
+  <p class="text-muted">Try adjusting your search or filters.</p>
+</div>
+{% else %}
+<div class="row g-3">
+  {% for p in products %}
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="card product-card h-100">
+      <a href="{{ url_for('products.detail', product_id=p.id) }}">
+        <img src="{{ p.image_url }}" class="w-100" alt="{{ p.name }}">
+      </a>
+      <div class="card-body">
+        <div class="small text-muted mb-1">{{ p.category.name }}</div>
+        <h6 class="mb-1"><a href="{{ url_for('products.detail', product_id=p.id) }}" class="text-decoration-none text-dark">{{ p.name }}</a></h6>
+        <div class="small text-muted mb-1">Sold by {{ p.seller.name }}</div>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <span class="price">{{ p.price|currency }}</span>
+          {% if p.is_low_stock and p.stock_quantity > 0 %}
+          <span class="badge badge-low-stock">Low Stock</span>
+          {% elif p.stock_quantity == 0 %}
+          <span class="badge badge-out-of-stock">Out of Stock</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% for page_num in pagination.iter_pages() %}
+      {% if page_num %}
+      <li class="page-item {{ 'active' if page_num == pagination.page }}">
+        <a class="page-link" href="{{ url_for('products.catalog', page=page_num, q=q, category=category_id, sort=sort) }}">{{ page_num }}</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}
+{% endif %}
+{% endblock %}

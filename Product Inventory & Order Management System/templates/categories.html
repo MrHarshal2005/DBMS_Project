@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Categories - InventoryHub{% endblock %}
+{% block content %}
+<h4 class="mb-4">Category Management</h4>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card p-4">
+      <h6 class="mb-3">Add Category</h6>
+      <form method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label class="form-label">Name</label>
+          <input type="text" name="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-control" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Add Category</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card p-3">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead><tr><th>Name</th><th>Description</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+          {% for c in categories %}
+            <form id="cat-edit-{{ c.id }}" method="POST" action="{{ url_for('seller.edit_category', category_id=c.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"></form>
+            <form id="cat-toggle-{{ c.id }}" method="POST" action="{{ url_for('seller.toggle_category', category_id=c.id) }}"
+                  data-confirm="{{ 'Deactivate' if c.status == 'ACTIVE' else 'Activate' }} this category?">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"></form>
+            <tr>
+              <td>
+                <input type="text" name="name" value="{{ c.name }}" form="cat-edit-{{ c.id }}" class="form-control form-control-sm" style="max-width:160px">
+              </td>
+              <td>
+                <input type="text" name="description" value="{{ c.description or '' }}" form="cat-edit-{{ c.id }}" class="form-control form-control-sm">
+              </td>
+              <td><span class="badge {{ 'bg-success' if c.status == 'ACTIVE' else 'bg-secondary' }}">{{ c.status }}</span></td>
+              <td class="text-nowrap">
+                <button type="submit" form="cat-edit-{{ c.id }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-save"></i></button>
+                <button type="submit" form="cat-toggle-{{ c.id }}" class="btn btn-sm btn-outline-secondary">
+                  <i class="fa-solid fa-{{ 'ban' if c.status == 'ACTIVE' else 'check' }}"></i>
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="text-muted small mb-0">Categories are never permanently deleted if products are linked to them &mdash; they can only be deactivated.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
